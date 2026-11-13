@@ -16,7 +16,14 @@ public class ScheduleManager {
     public ScheduleItem addItem(String title, LocalDate date, LocalTime startTime, int duration,
                                 Category category, String note) throws SQLException {
         validate(title, duration);
-        ScheduleItem item = new ScheduleItem(title.trim(), date, startTime, duration, category, note);
+        ScheduleItem item = new ScheduleItemBuilder()
+                .title(title.trim())
+                .date(date)
+                .startTime(startTime)
+                .durationMinutes(duration)
+                .category(category)
+                .note(note)
+                .build();
         if (hasTimeConflict(item, 0)) {
             throw new IllegalArgumentException("На цей час уже є інший запис.");
         }
@@ -29,7 +36,14 @@ public class ScheduleManager {
             return false;
         }
         validate(title, duration);
-        ScheduleItem item = new ScheduleItem(title.trim(), date, startTime, duration, category, note);
+        ScheduleItem item = new ScheduleItemBuilder()
+                .title(title.trim())
+                .date(date)
+                .startTime(startTime)
+                .durationMinutes(duration)
+                .category(category)
+                .note(note)
+                .build();
         if (hasTimeConflict(item, id)) {
             throw new IllegalArgumentException("На цей час уже є інший запис.");
         }
