@@ -16,21 +16,17 @@ public class ScheduleItemBuilder {
         return this;}
     public ScheduleItemBuilder startTime(LocalTime startTime) {
         this.startTime = startTime;
-        return this;
-    }
+        return this;}
     public ScheduleItemBuilder durationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
         return this;
     }
-
     public ScheduleItemBuilder category(Category category) {
         this.category = category;
-        return this;
-} }
+	return this;}
     public ScheduleItemBuilder note(String note) {
         this.note = note;
-        return this;
-}}
+	return this;}
     public ScheduleItem build() {
         return new ScheduleItem(title, date, startTime, durationMinutes, category, note);
 }}
