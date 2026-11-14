@@ -127,8 +127,12 @@ public class ConsoleMenu {
                 if (value > 0) {
                     return value;
                 }
-            } catch (NumberFormatException ignored) {}
-            System.out.println("Введіть ціле число, більше за 0.");}}
+                System.out.println("Введіть ціле число, більше за 0.");
+            } catch (NumberFormatException exception) {
+                System.out.println("Введіть ціле число, більше за 0.");
+            }
+        }
+    }
     private long readLong(String message) {
         while (true) { try {
                 System.out.print(message);
@@ -147,9 +151,12 @@ public class ConsoleMenu {
                 if (choice >= 1 && choice <= categories.length) {
                     return categories[choice - 1];
                 }
-            } catch (NumberFormatException ignored) {}
-            System.out.println("Оберіть номер категорії зі списку.");
-        }}
+                System.out.println("Оберіть номер категорії зі списку.");
+            } catch (NumberFormatException exception) {
+                System.out.println("Оберіть номер категорії зі списку.");
+            }
+        }
+    }
     private void printItems(List<ScheduleItem> items) {
         if (items.isEmpty()) {
             System.out.println("Записів не знайдено.");
