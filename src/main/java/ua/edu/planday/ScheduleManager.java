@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleManager {
-    private final ScheduleItemDao itemDao;
+    private final ScheduleStorage storage;
     private final ConflictChecker conflictChecker;
 
     public ScheduleManager(ScheduleItemDao itemDao) {
-        this(itemDao, new TimeConflictChecker());
+        this(new DatabaseStorage(itemDao), new TimeConflictChecker());
     }
 
-    public ScheduleManager(ScheduleItemDao itemDao, ConflictChecker conflictChecker) {
-        this.itemDao = itemDao;
+    public ScheduleManager(ScheduleStorage storage, ConflictChecker conflictChecker) {
+        this.storage = storage;
         this.conflictChecker = conflictChecker;
     }
 
@@ -33,12 +33,12 @@ public class ScheduleManager {
         if (hasTimeConflict(item, 0)) {
             throw new IllegalArgumentException("На цей час уже є інший запис.");
         }
-        return itemDao.save(item);
+        return storage.save(item);
     }
 
     public boolean updateItem(long id, String title, LocalDate date, LocalTime startTime, int duration,
                               Category category, String note) throws SQLException {
-        if (itemDao.findById(id) == null) {
+        if (storage.findById(id) == null) {
             return false;
         }
         validate(title, duration);
@@ -53,32 +53,32 @@ public class ScheduleManager {
         if (hasTimeConflict(item, id)) {
             throw new IllegalArgumentException("На цей час уже є інший запис.");
         }
-        return itemDao.update(id, item);
+        return storage.update(id, item);
     }
 
     public List<ScheduleItem> getItemsForDate(LocalDate date) throws SQLException {
-        return itemDao.findByDate(date);
+        return storage.findByDate(date);
     }
 
     public List<ScheduleItem> getItemsForWeek(LocalDate anyDayOfWeek) throws SQLException {
         LocalDate monday = anyDayOfWeek.minusDays(anyDayOfWeek.getDayOfWeek().getValue() - 1L);
         List<ScheduleItem> result = new ArrayList<>();
         for (int day = 0; day < 7; day++) {
-            result.addAll(itemDao.findByDate(monday.plusDays(day)));
+            result.addAll(storage.findByDate(monday.plusDays(day)));
         }
         return result;
     }
 
     public boolean deleteItem(long id) throws SQLException {
-        return itemDao.delete(id);
+        return storage.delete(id);
     }
 
     public ScheduleItem getItemById(long id) throws SQLException {
-        return itemDao.findById(id);
+        return storage.findById(id);
     }
 
     private boolean hasTimeConflict(ScheduleItem newItem, long ignoredId) throws SQLException {
-        return conflictChecker.hasConflict(newItem, itemDao.findByDate(newItem.getDate()), ignoredId);
+        return conflictChecker.hasConflict(newItem, storage.findByDate(newItem.getDate()), ignoredId);
     }
 
     private void validate(String title, int duration) {
