@@ -50,7 +50,9 @@ flowchart TD
     User["Користувач"] --> Menu["ConsoleMenu"]
     Menu --> Manager["ScheduleManager"]
     Manager --> Item["ScheduleItem"]
-    Manager --> Dao["ScheduleItemDao"]
+    Manager --> Checker["TimeConflictChecker"]
+    Manager --> Storage["DatabaseStorage"]
+    Storage --> Dao["ScheduleItemDao"]
     Dao --> DB[("PostgreSQL")]
 ```
 
@@ -60,7 +62,10 @@ flowchart TD
 - **`ConsoleMenu`** - показує меню, читає введення користувача та виводить повідомлення.
 - **`ScheduleManager`** - додає, шукає, змінює і видаляє записи; також перевіряє перетин часу.
 - **`ScheduleItem`** - описує один запис у розкладі.
+- **`ScheduleItemBuilder`** - допомагає створити запис із кількох полів.
 - **`Category`** - перелік можливих категорій запису.
+- **`ConflictChecker`** і **`TimeConflictChecker`** - перевіряють, чи перетинаються записи за часом.
+- **`ScheduleStorage`** і **`DatabaseStorage`** - відділяють `ScheduleManager` від класу роботи з базою.
 - **`ScheduleItemDao`** - виконує SQL-запити: додає, читає, змінює та видаляє записи в базі даних.
 - **`DatabaseConnection`** - створює з'єднання з PostgreSQL через JDBC.
 
