@@ -8,9 +8,15 @@ import java.util.List;
 
 public class ScheduleManager {
     private final ScheduleItemDao itemDao;
+    private final ConflictChecker conflictChecker;
 
     public ScheduleManager(ScheduleItemDao itemDao) {
+        this(itemDao, new TimeConflictChecker());
+    }
+
+    public ScheduleManager(ScheduleItemDao itemDao, ConflictChecker conflictChecker) {
         this.itemDao = itemDao;
+        this.conflictChecker = conflictChecker;
     }
 
     public ScheduleItem addItem(String title, LocalDate date, LocalTime startTime, int duration,
@@ -72,15 +78,7 @@ public class ScheduleManager {
     }
 
     private boolean hasTimeConflict(ScheduleItem newItem, long ignoredId) throws SQLException {
-        for (ScheduleItem existingItem : itemDao.findByDate(newItem.getDate())) {
-            boolean isSameItem = existingItem.getId() == ignoredId;
-            boolean timesOverlap = newItem.getStartTime().isBefore(existingItem.getEndTime())
-                    && existingItem.getStartTime().isBefore(newItem.getEndTime());
-            if (!isSameItem && timesOverlap) {
-                return true;
-            }
-        }
-        return false;
+        return conflictChecker.hasConflict(newItem, itemDao.findByDate(newItem.getDate()), ignoredId);
     }
 
     private void validate(String title, int duration) {
